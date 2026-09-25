@@ -1,6 +1,7 @@
 const c = @import("libc");
-const util = @import("util.zig");
+const mem = @import("mem.zig");
 const Parser = @import("parser.zig").Parser;
+const ArrayList = @import("array_list.zig").ArrayList;
 
 // fn input() [1024:0]u8 {
 //     const len = 1024;
@@ -44,21 +45,47 @@ pub export fn main(argc: c_int, argv: [*][*:0]const u8) c_int {
 
     // ----------------------------------------------------------
 
-    const ptr = util.create(i32) catch {
+    const ptr = mem.create(i32) catch {
         unreachable;
     };
-    defer util.free(ptr);
+
     ptr.* = 0;
 
+    mem.free(ptr);
+
     // ----------------------------------------------------------
 
-    const array = util.alloc(i32, 5) catch {
+    var array = mem.alloc(i32, 5) catch {
         unreachable;
     };
-    defer util.free(array.ptr);
-    array[4] = 0;
+
+    array[4] = 69;
+    array = mem.realloc(array, 6) catch {
+        unreachable;
+    };
+    array[5] = 42;
+
+    mem.free(array.ptr);
 
     // ----------------------------------------------------------
+
+    var list = ArrayList(usize).init(.{
+        .initial_capacity = 2,
+        .expand_method = .{
+            .scalar = 1.5,
+        },
+    });
+
+    list.appendMany(&[_]usize{0} ** 128) catch {
+        unreachable;
+    };
+
+    _ = c.printf("len: %zu\n", list.items.len);
+    while (list.pop()) |item| {
+        _ = c.printf("%zu\n", item);
+    }
+
+    list.deinit();
 
     return 0;
 }
