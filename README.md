@@ -15,7 +15,7 @@ $ du -sh zig-out/bin/czig
 ### ReleaseFast
 ```console
 $ du -sh zig-out/bin/czig
-24K     zig-out/bin/czig
+28K     zig-out/bin/czig
 ```
 ### ReleaseSmall
 ```console
